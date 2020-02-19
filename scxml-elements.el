@@ -11,7 +11,8 @@
 
 (defclass scxml-scxml (scxml--core-scxml scxml-element scxml-element-with-initial)
   ((name :initarg :name
-         :accessor scxml-element-name
+         :reader scxml-get-name
+         :writer scxml-set-name
          :initform nil
          :type (or string null))
    (datamodel :initarg :datamodel
@@ -28,7 +29,7 @@ Locked attributes: xmlns, version,")
 (cl-defmethod scxml-print ((scxml scxml-scxml))
   "Pretty print SCXML for human eyeballs."
   (format "scxml(name:%s, initial:%s, %s)"
-          (scxml-element-name scxml)
+          (scxml-get-name scxml)
           (scxml-element-initial scxml)
           (cl-call-next-method)))
 (cl-defmethod scxml-xml-attributes ((element scxml-scxml))
@@ -37,7 +38,7 @@ Locked attributes: xmlns, version,")
 Only doing xmlnns and version here."
   (let ((attributes (list ;; (cons 'xmlns "http://www.w3.org/2005/07/scxml")
                           ;; (cons 'version "1.0")
-                          (cons 'name (scxml-element-name element))
+                          (cons 'name (scxml-get-name element))
                           (cons 'initial (scxml-element-initial element)))))
     (append attributes
             (cl-call-next-method))))

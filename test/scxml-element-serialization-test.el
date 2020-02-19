@@ -7,7 +7,7 @@
                   "<scxml />")))
     (should (eq 0 (scxml-num-children element)))
     (should (scxml-scxml-p element))
-    (should (eq nil (scxml-element-name element)))
+    (should (eq nil (scxml-get-name element)))
     (should (eq 0 (scxml-num-attrib element)))))
 (ert-deftest scxml-read-string-test2 ()
   "Empty scxml with name"
@@ -15,7 +15,7 @@
                   "<scxml name=\"test\" />")))
     (should (eq 0 (scxml-num-children element)))
     (should (scxml-scxml-p element))
-    (should (equal "test" (scxml-element-name element)))
+    (should (equal "test" (scxml-get-name element)))
     (should (eq 0 (scxml-num-attrib element)))))
 (ert-deftest scxml-read-string-test3 ()
   "Empty scxml with name and attribute"
@@ -23,7 +23,7 @@
                   "<scxml name=\"test\" extra-attributes=\"sure\" />")))
     (should (eq 0 (scxml-num-children element)))
     (should (scxml-scxml-p element))
-    (should (equal "test" (scxml-element-name element)))
+    (should (equal "test" (scxml-get-name element)))
     (should (eq 1 (scxml-num-attrib element)))
     (should (equal "sure"
                    (scxml-get-attrib element 'extra-attributes)))))
@@ -32,7 +32,7 @@
   (let ((element (scxml-read-string
                   "<scxml name=\"test\"> \n\t<state id=\"A\" extra=\"attributes\" /> \n </scxml>")))
     (should (scxml-scxml-p element))
-    (should (equal "test" (scxml-element-name element)))
+    (should (equal "test" (scxml-get-name element)))
     (should (equal 1 (scxml-num-children element)))
     (should (eq nil (scxml-element-initial element)))
     (let* ((children (scxml-children element))
@@ -54,7 +54,7 @@
                      <state id=\"has-id\" />
                     </parallel> \n </scxml>")))
     (should (scxml-scxml-p element))
-    (should (eq nil (scxml-element-name element)))
+    (should (eq nil (scxml-get-name element)))
     (should (equal 1 (scxml-num-children element)))
     (should (equal "P" (scxml-element-initial element)))
     (let* ((children (scxml-children element))

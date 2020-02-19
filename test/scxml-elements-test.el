@@ -6,7 +6,7 @@
   (let* ((attribs '((initial . "test-initial")
                     (test-property . "anything")))
          (element (scxml--element-factory 'scxml attribs)))
-    (should (equal (scxml-element-name element)
+    (should (equal (scxml-get-name element)
                    nil))
     (should (equal (scxml-element-initial element)
                    "test-initial"))
