@@ -112,14 +112,5 @@ scxml--element-factory is used."
                  (eq (length xml-data) 1))
       (error "Unable to read non-<scxml> documents"))
     (scxml--factory root-xml element-factory)))
-(defun scxml-write-buffer ()
-  "fire out some XML to a random buffer"
-  (interactive)
-  (let ((buffer (generate-new-buffer "scxml-xml-output"))
-        (diagram scxml-draw--diagram))
-    (with-current-buffer buffer
-      (insert (scxml-xml-string (scxml-diagram-root diagram)))
-      (xml-mode))
-    (switch-to-buffer buffer)))
 
 (provide 'scxml-element-serialization)
