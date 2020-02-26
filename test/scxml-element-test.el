@@ -50,7 +50,7 @@
                    (lambda (element)
                      (incf count)
                      (let ((id (and (object-of-class-p element 'scxml-element-with-id)
-                                    (scxml-element-id element))))
+                                    (scxml-get-id element))))
                        (when id
                          (push id id-list)))))
       (setq id-list (nreverse id-list))
@@ -79,7 +79,7 @@
                    (lambda (element)
                      (incf count)
                      (let ((id (and (object-of-class-p element 'scxml-element-with-id)
-                                    (scxml-element-id element))))
+                                    (scxml-get-id element))))
                        (when id
                          (push id id-list)))))
       (should (eql (length id-list) 1))

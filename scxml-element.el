@@ -327,7 +327,8 @@ Note: a root element would have a coordinate of nil."
 
 (defclass scxml-element-with-id ()
   ((id :initarg :id
-       :accessor scxml-element-id
+       :reader scxml-get-id
+       :writer scxml-set-id
        :initform nil
        :type (or string null)))
   :abstract t
@@ -336,7 +337,7 @@ Note: a root element would have a coordinate of nil."
 (defun scxml-element-with-id-class-p (any-object)
   "Equivalent of (object-of-class-p ANY-OBJECT 'scxml-element-with-id)"
   (object-of-class-p any-object 'scxml-element-with-id))
-(cl-defmethod (setf scxml-element-id) :before (id (element scxml-element-with-id))
+(cl-defmethod scxml-set-id :before (id (element scxml-element-with-id))
   "Validate the id before setting.
 
 This should function with the :writer slot option for defclass
@@ -348,7 +349,7 @@ but that does not appear to be working?"
   (oset element id id))
 (cl-defmethod scxml-print ((idable-element scxml-element-with-id))
   (format "id:%s, %s"
-          (scxml-element-id idable-element)
+          (scxml-get-id idable-element)
           (cl-call-next-method)))
 (cl-defgeneric scxml-element-find-by-id ((search-root scxml-element) (id-to-find string))
   "Find element with ID-TO-FIND starting at SEARCH-ROOT and going down.
@@ -360,7 +361,7 @@ below SEARCH-ROOT")
   (cl-block scxml-element-find-by-id-block
     (scxml-visit search-root
                  (lambda (element)
-                   (when (string-equal (scxml-element-id element) id-to-find)
+                   (when (string-equal (scxml-get-id element) id-to-find)
                      (cl-return-from scxml-element-find-by-id-block element)))
                  (lambda (element)
                    (object-of-class-p element 'scxml-element-with-id)))
@@ -396,7 +397,7 @@ but that does not appear to be working?"
                 (error "Unable to set initial attribute when a child <initial> element exists"))
               (when (and (not found)
                          (object-of-class-p child 'scxml-element-with-id)
-                         (equal (scxml-element-id child) initial))
+                         (equal (scxml-get-id child) initial))
                 (setq found t)))
             (scxml-children element))
       (when (not found)

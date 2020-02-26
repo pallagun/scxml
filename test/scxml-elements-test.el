@@ -19,7 +19,7 @@
   (let* ((attribs '((id . "test-id")
                     (anything . "else")))
          (element (scxml--element-factory 'state attribs)))
-    (should (equal (scxml-element-id element)
+    (should (equal (scxml-get-id element)
                    "test-id"))
     (should (equal (scxml-element-initial element)
                    nil))

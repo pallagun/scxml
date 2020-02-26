@@ -39,7 +39,7 @@
            (child (first children)))
       (should (eq 1 (length children)))
       (should (scxml-state-p child))
-      (should (equal "A" (scxml-element-id child)))
+      (should (equal "A" (scxml-get-id child)))
       (should (eq 1 (scxml-num-attrib child)))
       (should (equal "attributes" (scxml-get-attrib child 'extra)))
       (should (eq 0 (scxml-num-children child)))
@@ -61,7 +61,7 @@
            (child (first children)))
       (should (eq 1 (length children)))
       (should (scxml-parallel-p child))
-      (should (equal "P" (scxml-element-id child)))
+      (should (equal "P" (scxml-get-id child)))
       (should (eq 1 (scxml-num-attrib child)))
       (should (equal "attributes" (scxml-get-attrib child 'extra)))
       (should (eq 2 (scxml-num-children child)))
@@ -71,13 +71,13 @@
         (should (eq 2 (length grandchildren)))
 
         (should (scxml-state-p first-grand-child))
-        (should (eq nil (scxml-element-id first-grand-child)))
+        (should (eq nil (scxml-get-id first-grand-child)))
         (should (eq 1 (scxml-num-attrib first-grand-child)))
         (should (equal "id" (scxml-get-attrib first-grand-child 'missing)))
         (should (eq 0 (scxml-num-children first-grand-child)))
 
         (should (scxml-state-p second-grand-child))
-        (should (equal "has-id" (scxml-element-id second-grand-child)))
+        (should (equal "has-id" (scxml-get-id second-grand-child)))
         (should (eq 0 (scxml-num-attrib second-grand-child)))
         (should (eq 0 (scxml-num-children second-grand-child)))))))
 

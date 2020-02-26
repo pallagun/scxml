@@ -56,12 +56,12 @@ Children:
 (cl-defmethod scxml-print ((state scxml-state))
   "Spit out a string representing ELEMENT for human eyeballs"
   (format "state(id: %s, %s)"
-          (scxml-element-id state)
+          (scxml-get-id state)
           (cl-call-next-method state)))
 (cl-defmethod scxml-xml-attributes ((element scxml-state))
   "attributes: id, initial"
   (append
-   (list (cons 'id (scxml-element-id element))
+   (list (cons 'id (scxml-get-id element))
          (cons 'initial (scxml-element-initial element)))
    (cl-call-next-method)))
 
@@ -75,7 +75,7 @@ Children:
 (cl-defmethod scxml-xml-attributes ((element scxml-final))
   "attributes: id"
   (append
-   (list (cons 'id (scxml-element-id element)))
+   (list (cons 'id (scxml-get-id element)))
    (cl-call-next-method)))
 
 (defclass scxml-initial (scxml--core-initial scxml-element)
@@ -107,7 +107,7 @@ Children:
 (cl-defmethod scxml-xml-attributes ((element scxml-parallel))
   "attributes: id, initial"
   (append
-   (list (cons 'id (scxml-element-id element)))
+   (list (cons 'id (scxml-get-id element)))
    (cl-call-next-method)))
 
 (defclass scxml-transition (scxml--core-transition scxml-element)
@@ -165,7 +165,7 @@ Children must be executable content.")
           (cl-call-next-method)))))
 (cl-defmethod scxml-get-all-transitions-to ((element scxml-element-with-id))
   "Collect all transition elements which target STATE"
-  (let ((target-id (scxml-element-id element)))
+  (let ((target-id (scxml-get-id element)))
     (scxml-collect (scxml-root-element element)
                    (lambda (other)
                      (and (object-of-class-p other 'scxml-transition)
@@ -254,7 +254,7 @@ belongs to an scxml document that is already known to be valid."
   (cl-labels ((get-all-non-nil-ids
                (starting-element)
                (seq-filter #'identity
-                           (mapcar #'scxml-element-id
+                           (mapcar #'scxml-get-id
                                    (scxml-collect-all starting-element
                                                       #'scxml-element-with-id-class-p))))
               (get-all-transition-targets
@@ -285,7 +285,7 @@ belongs to an scxml document that is already known to be valid."
                         (siblings (seq-filter (lambda (sibling) (not (eq sibling initial-element)))
                                               (scxml-children parent-element)))
                         (sibling-ids (seq-filter #'identity
-                                                 (mapcar #'scxml-element-id
+                                                 (mapcar #'scxml-get-id
                                                          (seq-filter #'scxml-element-with-id-class-p siblings)))))
                    (when (some #'scxml-initial-class-p siblings)
                      (error "An element may only have one <initial> child element, found more than one."))
@@ -303,7 +303,7 @@ belongs to an scxml document that is already known to be valid."
                    (let ((child-ids (seq-filter #'identity
                                                 (mapcar (lambda (child)
                                                           (when (scxml-element-with-id-class-p child)
-                                                            (scxml-element-id child)))
+                                                            (scxml-get-id child)))
                                                         (scxml-children element-with-initial)))))
                      (unless (member initial-state-id child-ids)
                        (error "Unsatisfied initial attribute of '%s'"
