@@ -39,17 +39,8 @@
   (let ((attribs nil))
     (scxml-map-attrib element
                       (lambda (key val)
-                        (when (scxml---visible-xml-attribute-name key)
-                          (push (cons key val) attribs))))
+                        (push (cons key val) attribs)))
     attribs))
-(defun scxml---visible-xml-attribute-name (key)
-  "Return non-nil if KEY (a symbol) is an attribute that should be put in XML.
-
-Generally filters out symbols that start with 'scxml---'."
-  ;; TODO - this 'scxml---' prefix should be a constant somewhere.
-  (let ((prop-name (downcase (symbol-name key))))
-    (or (< (length prop-name) (1+ (length "scxml---")))
-        (not (equal (substring prop-name 0 8) "scxml---")))))
 (cl-defgeneric scxml-children ((element scxml-element))
   "Return the children of ELEMENT.")
 (cl-defmethod scxml-children ((element scxml-element))

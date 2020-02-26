@@ -36,10 +36,10 @@ Locked attributes: xmlns, version,")
   "attributes: initial, name, xmlns, version, datamodel, binding.
 
 Only doing xmlnns and version here."
-  (let ((attributes (list ;; (cons 'xmlns "http://www.w3.org/2005/07/scxml")
-                          ;; (cons 'version "1.0")
-                          (cons 'name (scxml-get-name element))
-                          (cons 'initial (scxml-element-initial element)))))
+  (let ((attributes (list ;; (cons "xmlns" "http://www.w3.org/2005/07/scxml")
+                          ;; (cons "version" "1.0")
+                          (cons "name" (scxml-get-name element))
+                          (cons "initial" (scxml-element-initial element)))))
     (append attributes
             (cl-call-next-method))))
 
