@@ -61,8 +61,8 @@ Children:
 (cl-defmethod scxml-xml-attributes ((element scxml-state))
   "attributes: id, initial"
   (append
-   (list (cons 'id (scxml-get-id element))
-         (cons 'initial (scxml-element-initial element)))
+   (list (cons "id" (scxml-get-id element))
+         (cons "initial" (scxml-element-initial element)))
    (cl-call-next-method)))
 
 (defclass scxml-final (scxml--core-final scxml-state-type)
@@ -75,7 +75,7 @@ Children:
 (cl-defmethod scxml-xml-attributes ((element scxml-final))
   "attributes: id"
   (append
-   (list (cons 'id (scxml-get-id element)))
+   (list (cons "id" (scxml-get-id element)))
    (cl-call-next-method)))
 
 (defclass scxml-initial (scxml--core-initial scxml-element)
@@ -107,7 +107,7 @@ Children:
 (cl-defmethod scxml-xml-attributes ((element scxml-parallel))
   "attributes: id, initial"
   (append
-   (list (cons 'id (scxml-get-id element)))
+   (list (cons "id" (scxml-get-id element)))
    (cl-call-next-method)))
 
 (defclass scxml-transition (scxml--core-transition scxml-element)
@@ -158,10 +158,10 @@ Children must be executable content.")
                                   (mapconcat #'identity events " ")
                                 nil)))
     (append (seq-filter #'cdr
-                        `((target . ,target)
-                          (event . ,stringified-events)
-                          (cond . ,cond-expr)
-                          (type . ,type)))
+                        `(("target" . ,target)
+                          ("event" . ,stringified-events)
+                          ("cond" . ,cond-expr)
+                          ("type" . ,type)))
           (cl-call-next-method)))))
 (cl-defmethod scxml-get-all-transitions-to ((element scxml-element-with-id))
   "Collect all transition elements which target STATE"
@@ -428,7 +428,6 @@ Does not build recursively."
                     (setq constructor-params
                           (plist-put constructor-params initarg-sym (cdr cell))))
                else
-               when (scxml---visible-xml-attribute-name attrib-name-symbol)
                do (push cell attribute-params))
       (let ((element (apply class constructor-params)))
         (mapc (lambda (cell)
