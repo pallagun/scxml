@@ -208,7 +208,9 @@ Children: must contain exactly one unconditional <transition>
 indicating default history.")
 
 ;; validation functions
-(cl-defmethod scxml--validate-add-child ((parent scxml-element) (child scxml-element))
+(cl-defgeneric scxml-validate-add-child ((parent scxml-element) (child scxml-element))
+  "Validate addition of CHILD to PARENT throwing an error when invalid.")
+(cl-defmethod scxml-validate-add-child ((parent scxml-element) (child scxml-element))
   "Validate addition of CHILD to PARENT throwing an error when invalid.
 
 The starting assumption is that PARENT belongs to an scxml

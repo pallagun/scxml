@@ -41,7 +41,7 @@
   (let ((my-parent (scxml-state :id "parent")))
     ;; Empty <initial> elements are never valid to add.
     (should-error
-     (scxml--validate-add-child my-parent (scxml-initial)))
+     (scxml-validate-add-child my-parent (scxml-initial)))
     (let ((my-child (scxml-state :id "child"))
           (another-child (scxml-state :id "another-child")))
       (scxml-add-child my-parent my-child)
@@ -49,21 +49,21 @@
 
       ;; should not be able to add an empty <initial>
       (should-error
-       (scxml--validate-add-child my-parent (scxml-initial)))
+       (scxml-validate-add-child my-parent (scxml-initial)))
 
       ;; should not be able to add an initial with a an invalid transition.
       (should-error
-       (scxml--validate-add-child my-parent
+       (scxml-validate-add-child my-parent
                                   (scxml-add-child (scxml-initial)
                                                    (scxml-transition :target "invalid"))))
       ;; parent is not valid either.
       (should-error
-       (scxml--validate-add-child my-parent
+       (scxml-validate-add-child my-parent
                                   (scxml-add-child (scxml-initial)
                                                    (scxml-transition :target "parent"))))
 
       ;; Only possible valid <initial>
-      (scxml--validate-add-child my-parent
+      (scxml-validate-add-child my-parent
                                  (scxml-add-child (scxml-initial)
                                                   (scxml-transition :target "child")))
       ;; actually add it.
@@ -73,7 +73,7 @@
 
       ;; should not allow a second initial, even if it is valid as a first <initial>
       (should-error
-       (scxml--validate-add-child my-parent
+       (scxml-validate-add-child my-parent
                                   (scxml-add-child (scxml-initial)
                                                    (scxml-transition :target "another-child")))))))
 

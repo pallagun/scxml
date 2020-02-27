@@ -253,13 +253,30 @@ return value is nil.")
 
 Note: argument order is flipped between this function and the
 scxml reference algorithm.  When the arguments are equal the
-return value is nil."
+return value is nil.
+
+TODO: it seems like it might be a lot more efficient to use
+scxml-is-ancestor with the argument order flipped for this."
   (cl-block find-upward
     (scxml-visit-parents possible-descendant
                          (lambda (looking-upward)
                            (when (eq looking-upward element)
                              (cl-return-from find-upward t))))
     nil))
+(cl-defgeneric scxml-is-ancestor ((element scxml-element) (possible-ancestor scxml-element))
+  "Return non-nil if POSSIBLE-ANCESTOR is an ancestor of ELEMENT.
+
+When the arguments are equal the return value is nil.")
+(cl-defgeneric scxml-is-ancestor ((element scxml-element) (possible-ancestor scxml-element))
+  "Return non-nil if POSSIBLE-ANCESTOR is an ancestor of ELEMENT.
+
+When the arguments are equal the return value is nil."
+  (let ((parent (scxml-parent element))
+        (is-ancestor))
+    (while (and parent (not is-ancestor))
+      (if (eq parent possible-ancestor)
+          (setq is-ancestor t)
+        (setq parent (scxml-parent parent))))))
 (cl-defgeneric scxml-xml-document-coordinate ((element scxml-element) &optional (relative-to scxml-element))
   "Return the xml document coordinate of ELEMENT.
 
