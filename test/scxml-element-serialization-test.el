@@ -34,7 +34,7 @@
     (should (scxml-scxml-p element))
     (should (equal "test" (scxml-get-name element)))
     (should (equal 1 (scxml-num-children element)))
-    (should (eq nil (scxml-element-initial element)))
+    (should (eq nil (scxml-get-initial element)))
     (let* ((children (scxml-children element))
            (child (first children)))
       (should (eq 1 (length children)))
@@ -43,7 +43,7 @@
       (should (eq 1 (scxml-num-attrib child)))
       (should (equal "attributes" (scxml-get-attrib child 'extra)))
       (should (eq 0 (scxml-num-children child)))
-      (should (eq nil (scxml-element-initial element))))))
+      (should (eq nil (scxml-get-initial element))))))
 (ert-deftest scxml-read-string-test5 ()
   "Scxml element with parallel child and 2 state grandchildren"
   (let ((element (scxml-read-string
@@ -56,7 +56,7 @@
     (should (scxml-scxml-p element))
     (should (eq nil (scxml-get-name element)))
     (should (equal 1 (scxml-num-children element)))
-    (should (equal "P" (scxml-element-initial element)))
+    (should (equal "P" (scxml-get-initial element)))
     (let* ((children (scxml-children element))
            (child (first children)))
       (should (eq 1 (length children)))

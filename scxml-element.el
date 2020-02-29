@@ -377,7 +377,8 @@ below SEARCH-ROOT")
 
 (defclass scxml-element-with-initial ()
   ((initial :initarg :initial
-            :accessor scxml-element-initial
+            :reader scxml-get-initial
+            ;;writer scxml-set-initial  ; handled below.
             :initform nil
             :type (or string null)))
   :abstract t
@@ -388,16 +389,15 @@ below SEARCH-ROOT")
   (object-of-class-p any-object 'scxml-element-with-initial))
 (cl-defmethod scxml-print ((initialable-element scxml-element-with-initial))
   (format "initial:%s, %s"
-          (scxml-element-initial initialable-element)
+          (scxml-get-initial initialable-element)
           (cl-call-next-method)))
-(cl-defmethod (setf scxml-element-initial) :before (initial (element scxml-element-with-initial))
-   "Validate the INITIAL attribute before setting.
+(cl-defgeneric scxml-set-initial ((initial scxml-element-with-initial) value &optional do-not-validate)
+  "Set INITIAL's initial to be VALUE.
 
-This should function with the :writer slot option for defclass
-but that does not appear to be working?"
+When DO-NOT-VALIDATE is non-nil no validation will be done."
   ;; initial must reference a valid child and none of the
   ;; existing children can be <initial> elements.
-  (when initial
+  (when (and initial (not do-not-validate))
     ;; must validate
     (let ((found))
       (mapc (lambda (child)

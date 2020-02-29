@@ -16,10 +16,12 @@
          :initform nil
          :type (or string null))
    (datamodel :initarg :datamodel
-              :accessor scxml-datamodel-type
+              :reader scxml-get-datamodel
+              :writer scxml-set-datamodel
               :type (or string null))
    (binding :initarg :binding
-            :accessor scxml-binding
+            :reader scxml-set-binding
+            :writer scxml-get-binding
             :initform nil            ;must be one of 'early or 'late.  defaults to early.
             :type (or symbol null)))
   :documentation "The main <scxml /> element.
@@ -30,7 +32,7 @@ Locked attributes: xmlns, version,")
   "Pretty print SCXML for human eyeballs."
   (format "scxml(name:%s, initial:%s, %s)"
           (scxml-get-name scxml)
-          (scxml-element-initial scxml)
+          (scxml-get-initial scxml)
           (cl-call-next-method)))
 (cl-defmethod scxml-xml-attributes ((element scxml-scxml))
   "attributes: initial, name, xmlns, version, datamodel, binding.
@@ -39,7 +41,7 @@ Only doing xmlnns and version here."
   (let ((attributes (list ;; (cons "xmlns" "http://www.w3.org/2005/07/scxml")
                           ;; (cons "version" "1.0")
                           (cons "name" (scxml-get-name element))
-                          (cons "initial" (scxml-element-initial element)))))
+                          (cons "initial" (scxml-get-initial element)))))
     (append attributes
             (cl-call-next-method))))
 
@@ -62,7 +64,7 @@ Children:
   "attributes: id, initial"
   (append
    (list (cons "id" (scxml-get-id element))
-         (cons "initial" (scxml-element-initial element)))
+         (cons "initial" (scxml-get-initial element)))
    (cl-call-next-method)))
 
 (defclass scxml-final (scxml--core-final scxml-state-type)
@@ -300,7 +302,7 @@ belongs to an scxml document that is already known to be valid."
               (validate-initial-attribute
                (element-with-initial)
                ;; one child must have the id indicated by element's initial attribute
-               (let ((initial-state-id (scxml-element-initial element-with-initial)))
+               (let ((initial-state-id (scxml-get-initial element-with-initial)))
                  (when initial-state-id
                    (let ((child-ids (seq-filter #'identity
                                                 (mapcar (lambda (child)
