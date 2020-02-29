@@ -18,7 +18,7 @@
   :documentation "Indicates how this object relates to an scxml element.")
 
 ;; Marker classes - never apply more than one to an object.
-(defun scxml--core-type (anything)
+(defun scxml-core-type (anything)
   "Return the scxml core type of ANYTHING."
   (if (object-of-class-p anything 'scxml--core)
       (oref anything -core-type)        ;this will throw if it's an actual scxml--core
@@ -92,6 +92,12 @@ element types.  Constructed as an association list per parent
 element type."
   ;; TODO - add counts?  e.g. there can be at most one <initial> as a child of a <state>
   )
+(defun scxml-get-valid-child-types (parent-type)
+  "Return a list of all valid child types by PARENT-TYPE.
+
+Child types returned and PARENT-TYPE must be one of the entries
+in scxml--valid-child-types."
+  (alist-get parent-type scxml--valid-child-types nil))
 
 (cl-defgeneric scxml-xml-element-name ((element scxml--core))
   "Return what the xml element name would be for this ELEMENT.")
@@ -100,7 +106,7 @@ element type."
 
 Doesn't check to ensure the ELEMENT is actually valid for rendering to xml.
 Assumes everyone follows a nice naming scheme."
-  (let ((core-type (scxml--core-type element)))
+  (let ((core-type (scxml-core-type element)))
     (if core-type
         (symbol-name core-type)
       nil)))

@@ -221,8 +221,8 @@ document that is already known to be valid."
   (scxml--validate-child-given-parent nil element))
 (defun scxml--validate-parent-child-types (parent child)
   "Throw an error if CHILD is not a valid element type for PARENT."
-  (let ((parent-core-type (scxml--core-type parent))
-        (child-core-type (scxml--core-type child)))
+  (let ((parent-core-type (scxml-core-type parent))
+        (child-core-type (scxml-core-type child)))
     (unless (memq child-core-type
                   (alist-get parent-core-type
                              scxml--valid-child-types
