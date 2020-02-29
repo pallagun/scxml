@@ -97,7 +97,26 @@ element type."
 
 Child types returned and PARENT-TYPE must be one of the entries
 in scxml--valid-child-types."
+  ;; TODO - I think this can be assq?
   (alist-get parent-type scxml--valid-child-types nil))
+
+(defconst scxml--defined-attributes
+  '(
+    ;; excluding 'version' from here intentionally for now.
+    (scxml . (name initial datamodel binding))
+    (state . (id initial))
+    (parallel . (id))
+    (transition . (event cond target type))
+    (initial . nil)
+    (final . (id))
+    (onentry . nil)
+    (onexit . nil)
+    (history . (id type)))
+  "Mapping of what attributes are significant to the SCXML
+  specification per element type.")
+(defsubst scxml-get-defined-attributes (core-type)
+  "Return a list of symbols indicating which attributes are functionally significant for the CORE-TYPE."
+  (cdr (assq core-type scxml--defined-attributes)))
 
 (cl-defgeneric scxml-xml-element-name ((element scxml--core))
   "Return what the xml element name would be for this ELEMENT.")
