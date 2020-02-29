@@ -34,6 +34,12 @@
 (cl-defmethod cl-print-object ((object scxml-element) stream)
   "Pretty print the OBJECT to STREAM."
   (princ (scxml-print object) stream))
+(cl-defgeneric scxml-xml-attributes ((element scxml-element))
+  "Return an alist of ELEMENT's attributes for XML rendering.
+
+Note: at present it is not supported to have an attribute exist but have no =\"\" after it.  So this is possible: <thing attrib=\"\" /> but this in not: <thing attrib />.
+
+This function should never return any attribute with a nil value.")
 (cl-defmethod scxml-xml-attributes ((element scxml-element))
   "Return an alist of ELEMENT's attributes for XML rendering."
   (let ((attribs nil))
@@ -125,6 +131,16 @@ Return is unspecified.")
 Return is unspecified."
   (scxml---ensure-attributes element)
   (puthash key value (oref element _attributes)))
+(cl-defgeneric scxml-delete-attrib ((element scxml-element) key)
+  "Delete the attribute with name of KEY if exists.
+
+Return is unspecified.")
+(cl-defmethod scxml-delete-attrib ((element scxml-element) key)
+  "Delete the attribute with name of KEY if exists.
+
+Return is unspecified."
+  (with-slots (_attributes) element
+    (remhash key _attributes)))
 (cl-defgeneric scxml-get-attrib ((element scxml-element) key &optional default)
   "Return ELEMENT's attribute value for KEY, defaulting to DEFAULT")
 (cl-defmethod scxml-get-attrib ((element scxml-element) key &optional default)
@@ -391,13 +407,13 @@ below SEARCH-ROOT")
   (format "initial:%s, %s"
           (scxml-get-initial initialable-element)
           (cl-call-next-method)))
-(cl-defgeneric scxml-set-initial ((initial scxml-element-with-initial) value &optional do-not-validate)
+(cl-defgeneric scxml-set-initial ((element scxml-element-with-initial) value &optional do-not-validate)
   "Set INITIAL's initial to be VALUE.
 
 When DO-NOT-VALIDATE is non-nil no validation will be done."
   ;; initial must reference a valid child and none of the
   ;; existing children can be <initial> elements.
-  (when (and initial (not do-not-validate))
+  (when (and value (not do-not-validate))
     ;; must validate
     (let ((found))
       (mapc (lambda (child)
@@ -405,12 +421,12 @@ When DO-NOT-VALIDATE is non-nil no validation will be done."
                 (error "Unable to set initial attribute when a child <initial> element exists"))
               (when (and (not found)
                          (object-of-class-p child 'scxml-element-with-id)
-                         (equal (scxml-get-id child) initial))
+                         (equal (scxml-get-id child) value))
                 (setq found t)))
             (scxml-children element))
       (when (not found)
-        (error "Unable to find child element with id: %s" initial))))
-  (oset element initial initial))
+        (error "Unable to find valid child element with id: %s" value))))
+  (oset element initial value))
 
 (provide 'scxml-element)
 ;;; scxml-element.el ends here

@@ -42,7 +42,7 @@ Only doing xmlnns and version here."
                           ;; (cons "version" "1.0")
                           (cons "name" (scxml-get-name element))
                           (cons "initial" (scxml-get-initial element)))))
-    (append attributes
+    (append (seq-filter #'cdr attributes)
             (cl-call-next-method))))
 
 (defclass scxml-state-type (scxml-element scxml-element-with-id)
@@ -63,8 +63,9 @@ Children:
 (cl-defmethod scxml-xml-attributes ((element scxml-state))
   "attributes: id, initial"
   (append
-   (list (cons "id" (scxml-get-id element))
-         (cons "initial" (scxml-get-initial element)))
+   (seq-filter #'cdr
+               (list (cons "id" (scxml-get-id element))
+                     (cons "initial" (scxml-get-initial element))))
    (cl-call-next-method)))
 
 (defclass scxml-final (scxml--core-final scxml-state-type)
@@ -76,9 +77,11 @@ Children:
   )
 (cl-defmethod scxml-xml-attributes ((element scxml-final))
   "attributes: id"
-  (append
-   (list (cons "id" (scxml-get-id element)))
-   (cl-call-next-method)))
+  (let ((id (scxml-get-id element)))
+    (if id
+        (append (list (cons "id" id))
+                (cl-call-next-method))
+      (cl-call-next-method))))
 
 (defclass scxml-initial (scxml--core-initial scxml-element)
   ()
@@ -107,10 +110,12 @@ Children:
   "Spit out a string representing ELEMENT for human eyeballs"
   (format "parallel(%s)" (cl-call-next-method parallel)))
 (cl-defmethod scxml-xml-attributes ((element scxml-parallel))
-  "attributes: id, initial"
-  (append
-   (list (cons "id" (scxml-get-id element)))
-   (cl-call-next-method)))
+  "attributes: id"
+  (let ((id (scxml-get-id element)))
+    (if id
+        (append (list (cons "id" id))
+                (cl-call-next-method))
+      (cl-call-next-method))))
 
 (defclass scxml-transition (scxml--core-transition scxml-element)
   ((target :initarg :target
