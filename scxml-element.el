@@ -243,7 +243,8 @@ scxml-elements.  Possibly it should do that?"
 (cl-defmethod scxml-visit-parents ((element scxml-element) visitor)
   "Visit all the parents of ELEMENT with VISITOR in increasing parent order.
 
-Visitor should be of the form (lambda (parent-element) ...)."
+ELEMENT is not visited.  Visitor should be of the
+form (lambda (parent-element) ...)."
   (let ((parent (scxml-parent element)))
     (while parent
       (funcall visitor parent)

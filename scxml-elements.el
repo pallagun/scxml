@@ -106,6 +106,9 @@ Recognized attributes: id
 No attrubtes required.
 Children:
   <onentry>, <onexit>, <transition>, <start>, <parallel>, <history>, <datamodel>, <invoke>")
+(defsubst scxml-parallel-class-p (any)
+  "Equivalent of (object-of-class-p ANY-OBJECT 'scxml-parallel)"
+  (object-of-class-p any 'scxml-parallel))
 (cl-defmethod scxml-print ((parallel scxml-parallel))
   "Spit out a string representing ELEMENT for human eyeballs"
   (format "parallel(%s)" (cl-call-next-method parallel)))
