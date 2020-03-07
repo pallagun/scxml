@@ -122,22 +122,26 @@ Children:
 
 (defclass scxml-transition (scxml--core-transition scxml-element)
   ((target :initarg :target
-           :accessor scxml-target-id
+           :reader scxml-get-target-id
+           :writer scxml-set-target-id
            :type (or null string)
            :initform nil
            :documentation "Attribute: \"target\".  This is actually the target ID value from scxml, not the target scxml-element")
    (events :initarg :events
-           :accessor scxml-events
+           :reader scxml-get-events
+           :writer scxml-set-events
            :type (or null list)
            :initform nil
            :documentation "Attribute: \"event\".  A list of event discriptors though in xml it is a space separated string.")
    (cond-expr :initarg :cond
-              :accessor scxml-cond-expr
+              :reader scxml-get-cond-expr
+              :writer scxml-set-cond-expr
               :type (or null string)
               :initform nil
               :documentation "Attribute: \"cond\". Condition for the transition which must evaluate to a boolean.")
    (type :initarg :type
-         :accessor scxml-type
+         :reader scxml-get-type
+         :writer scxml-set-type
          :initform nil
          :type (or null string)
          :documentation "Attribute: \"type\".  Transition type to determine if the parent state is exited when transitioning to a child state.  Must be one of 'external or 'internal"
@@ -179,7 +183,7 @@ Children must be executable content.")
     (scxml-collect (scxml-root-element element)
                    (lambda (other)
                      (and (object-of-class-p other 'scxml-transition)
-                          (equal target-id (scxml-target-id other)))))))
+                          (equal target-id (scxml-get-target-id other)))))))
 (cl-defmethod scxml-target ((transition scxml-transition))
   "Return the target element for TRANSITIONs target."
   ;; TODO - should this null coalescing be done here? it's null ?? ""
@@ -272,7 +276,7 @@ belongs to an scxml document that is already known to be valid."
               (get-all-transition-targets
                (starting-element)
                (seq-filter #'identity
-                           (mapcar #'scxml-target-id
+                           (mapcar #'scxml-get-target-id
                                    (scxml-collect-all starting-element
                                                       (lambda (element)
                                                         (object-of-class-p element 'scxml-transition))))))
@@ -289,11 +293,11 @@ belongs to an scxml document that is already known to be valid."
                    (error "An <initial> element must contain exactly 1 child, found %d children" (length initial-children)))
                  (unless (object-of-class-p initial-transition 'scxml-transition)
                    (error "An <initial> element must have a child of type <transition>, found %s" (eieio-object-class-name initial-transition)))
-                 (when (scxml-events initial-transition)
-                   (error "The <transition> in an <initial> element must not have any events, found events: %s" (scxml-events initial-transition)))
-                 (when (scxml-cond-expr initial-transition)
-                   (error "The <transition> in an <initial> element must not have a condition, found condition: %s" (scxml-cond-expr initial-transition)))
-                 (let* ((initial-target-id (scxml-target-id initial-transition))
+                 (when (scxml-get-events initial-transition)
+                   (error "The <transition> in an <initial> element must not have any events, found events: %s" (scxml-get-events initial-transition)))
+                 (when (scxml-get-cond-expr initial-transition)
+                   (error "The <transition> in an <initial> element must not have a condition, found condition: %s" (scxml-get-cond-expr initial-transition)))
+                 (let* ((initial-target-id (scxml-get-target-id initial-transition))
                         (siblings (seq-filter (lambda (sibling) (not (eq sibling initial-element)))
                                               (scxml-children parent-element)))
                         (sibling-ids (seq-filter #'identity
@@ -386,7 +390,7 @@ belongs to an scxml document that is already known to be valid."
 ;;                  (let ((transition (first children)))
 ;;                    (when (not (object-of-class-p transition 'scxml-transition))
 ;;                      (error "<initial> elements must have exactly one child, a <transition>"))
-;;                    (let ((target-id (scxml-target-id transition)))
+;;                    (let ((target-id (scxml-get-target-id transition)))
 ;;                      (when (<= (length target-id) 0)
 ;;                        (error "<initial> elements must have a child <transition> with a valid target"))
 ;;                      target-id))))))
