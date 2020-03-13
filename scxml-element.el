@@ -376,6 +376,7 @@ but that does not appear to be working?"
   (format "id:%s, %s"
           (scxml-get-id idable-element)
           (cl-call-next-method)))
+;; TODO- rename this to just be 'scxml-find-by-id'
 (cl-defgeneric scxml-element-find-by-id ((search-root scxml-element) (id-to-find string))
   "Find element with ID-TO-FIND starting at SEARCH-ROOT and going down.
 
