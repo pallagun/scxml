@@ -184,6 +184,21 @@ Return value is undefined."
   (mapc (lambda (child)
           (scxml-visit child visitor filter))
         (scxml-children element)))
+;; (cl-defmethod scxml-visit-bf ((element scxml-element) visitor &optional filter)
+;;   "Visit all children of ELEMENT with VISITOR and optionall FILTER first.
+
+;; Visitation starts with ELEMENT and proceeds breadth-first."
+;;   (let ((to-apply (list element))
+;;         (resulting-children))
+;;     (while (to-apply)
+;;       (cl-loop for e in to-apply
+;;                do (when (or (not filter) (funcall filter e))
+;;                     (funcall visitor e))
+;;                do (cl-loop for child in (scxml-children)
+;;                            do (setq resulting-children (cons child resulting-children))))
+;;       (setq to-apply resulting-children)
+;;       (setq resulting-children nil))))
+
 (cl-defgeneric scxml-visit-all ((element scxml-element) visitor &optional filter)
   "Visit all elements (parent or child, recursively) starting at the root element.")
 (cl-defmethod scxml-visit-all ((element scxml-element) visitor &optional filter)
@@ -293,7 +308,8 @@ When the arguments are equal the return value is nil."
     (while (and parent (not is-ancestor))
       (if (eq parent possible-ancestor)
           (setq is-ancestor t)
-        (setq parent (scxml-parent parent))))))
+        (setq parent (scxml-parent parent))))
+    is-ancestor))
 (cl-defgeneric scxml-xml-document-coordinate ((element scxml-element) &optional (relative-to scxml-element))
   "Return the xml document coordinate of ELEMENT.
 
