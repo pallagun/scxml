@@ -55,6 +55,9 @@ Only doing xmlnns and version here."
 Recognized attributes: id, initial
 Children:
   <onentry>, <onexit>, <transition>, <initial>, <state>, <parallel>")
+(defsubst scxml-state-class-p (any)
+  "Equivalent of (object-of-class-p ANY 'scxml-state)"
+  (object-of-class-p any 'scxml-state))
 (cl-defmethod scxml-print ((state scxml-state))
   "Spit out a string representing ELEMENT for human eyeballs"
   (format "state(id: %s, %s)"
@@ -75,6 +78,9 @@ Recognized attributes: id
 Children:
   <onentry>, <onexit>, <donedata>"
   )
+(defsubst scxml-final-class-p (any)
+  "Equivalent of (object-of-class-p ANY 'scxml-final)"
+  (object-of-class-p any 'scxml-final))
 (cl-defmethod scxml-xml-attributes ((element scxml-final))
   "attributes: id"
   (let ((id (scxml-get-id element)))
@@ -107,7 +113,7 @@ No attrubtes required.
 Children:
   <onentry>, <onexit>, <transition>, <start>, <parallel>, <history>, <datamodel>, <invoke>")
 (defsubst scxml-parallel-class-p (any)
-  "Equivalent of (object-of-class-p ANY-OBJECT 'scxml-parallel)"
+  "Equivalent of (object-of-class-p ANY 'scxml-parallel)"
   (object-of-class-p any 'scxml-parallel))
 (cl-defmethod scxml-print ((parallel scxml-parallel))
   "Spit out a string representing ELEMENT for human eyeballs"
