@@ -50,12 +50,14 @@ This function should never return any attribute with a nil value.")
 (cl-defgeneric scxml-children ((element scxml-element))
   "Return the children of ELEMENT.")
 (cl-defmethod scxml-children ((element scxml-element))
+  ;; TODO - this can just be a reader??
   "Return the children of ELEMENT."
   (oref element _children))
 (cl-defmethod scxml-num-children ((element scxml-element))
   "Return the number of child elements for ELEMENT."
   (length (oref element _children)))
 (cl-defmethod scxml-parent ((element scxml-element))
+  ;; TODO - this can just be a reader????
   "Return the parent of ELEMENT."
   (oref element _parent))
 (cl-defgeneric scxml-siblings ((element scxml-element))
@@ -159,7 +161,7 @@ Return is unspecified."
       (setq last parent)
       (setq parent (scxml-parent last)))
     last))
-(cl-defgeneric scxml-visit ((element scxml-element) visitor &optional filter)
+(cl-defgeneric scxml-visit ((element scxml-element) visitor &optional filter child-fn)
   "Visit all children of ELEMENT with VISITOR and optionally FILTER first.
 
 Visitation starts at ELEMENT and descends per child.  Other than
@@ -168,8 +170,12 @@ visiting ELEMENT first the order of visitation is undefined.
 VISITOR must be of form (lambda (element) ...)
 FILTER must be of form (lambda (element) ...)
 
+When CHILD-FN is specified it will be called to produce the child
+elements of any given element as (funcall child-fn element).
+When CHILD-FN is not specified `scxml-children' will be used.
+
 Return value is undefined.")
-(cl-defmethod scxml-visit ((element scxml-element) visitor &optional filter)
+(cl-defmethod scxml-visit ((element scxml-element) visitor &optional filter child-fn)
   "Visit all children of ELEMENT with VISITOR and optionally FILTER first.
 
 Visitation starts at ELEMENT and descends per child.  Other than
@@ -179,31 +185,23 @@ VISITOR must be of form (lambda (element) ...)
 FILTER must be of form (lambda (element) ...)
 
 Return value is undefined."
+  ;; TODO - seems like this could be easily optimized though I'm not
+  ;; sure what the gain would be, probably small.  It could fork off
+  ;; to 4 function: visit, visit-with-filter, visit-with-child-fn,
+  ;; visit-with-child-fn-and-filter.
+  (unless child-fn
+    (setq child-fn #'scxml-children))
   (if (or (not filter) (funcall filter element))
       (funcall visitor element))
   (mapc (lambda (child)
           (scxml-visit child visitor filter))
-        (scxml-children element)))
-;; (cl-defmethod scxml-visit-bf ((element scxml-element) visitor &optional filter)
-;;   "Visit all children of ELEMENT with VISITOR and optionall FILTER first.
+        (funcall child-fn element)))
 
-;; Visitation starts with ELEMENT and proceeds breadth-first."
-;;   (let ((to-apply (list element))
-;;         (resulting-children))
-;;     (while (to-apply)
-;;       (cl-loop for e in to-apply
-;;                do (when (or (not filter) (funcall filter e))
-;;                     (funcall visitor e))
-;;                do (cl-loop for child in (scxml-children)
-;;                            do (setq resulting-children (cons child resulting-children))))
-;;       (setq to-apply resulting-children)
-;;       (setq resulting-children nil))))
-
-(cl-defgeneric scxml-visit-all ((element scxml-element) visitor &optional filter)
+(cl-defgeneric scxml-visit-all ((element scxml-element) visitor &optional filter child-fn)
   "Visit all elements (parent or child, recursively) starting at the root element.")
-(cl-defmethod scxml-visit-all ((element scxml-element) visitor &optional filter)
+(cl-defmethod scxml-visit-all ((element scxml-element) visitor &optional filter child-fn)
   "Visit all elements (parent or child, recursively) starting at the root element"
-  (scxml-visit (scxml-root-element element) visitor filter))
+  (scxml-visit (scxml-root-element element) visitor filter child-fn))
 (cl-defgeneric scxml-collect ((element scxml-element) filter)
     "Return a list of ELEMENT and ELEMENT's children filtered by FILTER.
 
