@@ -191,7 +191,8 @@ Return value is undefined."
   ;; visit-with-child-fn-and-filter.
   (unless child-fn
     (setq child-fn #'scxml-children))
-  (if (or (not filter) (funcall filter element))
+  (if (or (not filter)
+          (funcall filter element))
       (funcall visitor element))
   (mapc (lambda (child)
           (scxml-visit child visitor filter))
@@ -415,7 +416,7 @@ below SEARCH-ROOT")
             :type (or string null)))
   :abstract t
   :documentation "Apply to an scxml element if it has an
-  'initial' attribute that's significant.")
+  'initial' attribute that is significant.")
 (defun scxml-element-with-initial-class-p (any-object)
   "Equivalent of (object-of-class-p ANY-OBJECT 'scxml-element-with-initial)"
   (object-of-class-p any-object 'scxml-element-with-initial))
