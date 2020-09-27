@@ -370,7 +370,12 @@ Note: a root element would have a coordinate of nil."
        :reader scxml-get-id
        :writer scxml-set-id
        :initform nil
-       :type (or string null)))
+       :type (or string null)
+       ;; TODO - documentation doesn't work here?  If you run help on
+       ;; this function you'll get that the generic version of the
+       ;; function is not documented.  Am I just using the wrong
+       ;; keyword symbol?
+       :documentation "Return the elements 'id' attribute value if it exists."))
   :abstract t
   :documentation "Apply to an scxml element if it has an 'id'
   attribute that's significant.")
