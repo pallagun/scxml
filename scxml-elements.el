@@ -135,7 +135,7 @@ Children:
            :documentation "Attribute: \"target\".  This is actually the target ID value from scxml, not the target scxml-element")
    (events :initarg :events
            :reader scxml-get-events
-           :writer scxml-set-events
+           ;; :writer scxml-set-events ;; handled below
            :type (or null list)
            :initform nil
            :documentation "Attribute: \"event\".  A list of event discriptors though in xml it is a space separated string.")
@@ -199,6 +199,19 @@ Children must be executable content.")
 (cl-defmethod scxml-source ((transition scxml-transition))
   "Return the source element for TRANSITION."
   (scxml-parent transition))
+(cl-defgeneric scxml-set-events ((transition scxml-transition) value)
+  "set the event= attribute of TRANSITION to be VALUE")
+(cl-defmethod scxml-set-events ((transition scxml-transition) (events string))
+  "Set theh events= attribute of TRANSITION to be EVENTS.
+
+Events are strings with no spaces.  EVENTS may be one event or many separated by spaces."
+  (let ((event-list (split-string events " " t)))
+    (scxml-set-events transition event-list)))
+(cl-defmethod scxml-set-events ((transition scxml-transition) (events list))
+  "Set theh events= attribute of TRANSITION to be EVENTS.
+
+EVENTS should be a list of strings."
+  (oset transition events event-list))
 
 (defclass scxml-onentry ()
   ()
