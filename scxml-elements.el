@@ -132,8 +132,10 @@ Children:
            :writer scxml-set-target-id
            :type (or null string)
            :initform nil
+           ;; TODO: this can actually be more than one target.
            :documentation "Attribute: \"target\".  This is actually the target ID value from scxml, not the target scxml-element")
    (events :initarg :events
+           ;; TODO: this is actually "event" not "events", I should change that.
            :reader scxml-get-events
            ;; :writer scxml-set-events ;; handled below
            :type (or null list)
@@ -159,6 +161,21 @@ No attributes are required.
 Recognized attributes: event, cond, target, type
   (note: one of 'event', 'cond' or 'target' must be present)
 Children must be executable content.")
+(cl-defmethod make-instance ((class (subclass scxml-transition)) &rest slots)
+  "Create a scxml-transition instance.
+
+Allowing for certain attributes to take different forms, such as:
+
+- :events - may be a string with space separators, a list, or null
+- TODO: :target - the same as events"
+  (if-let ((event-attribute-value (plist-get slots :events))
+           (events (split-string event-attribute-value " " t)))
+      (let ((slot-specifiers (copy-list slots))) ; be safe and copy the list?
+        (plist-put slot-specifiers :events events)
+        (apply (function cl-call-next-method)
+               (cons class slot-specifiers)))
+    (cl-call-next-method)))
+
 (defsubst scxml-transition-class-p (any)
   "Equivalent of (object-of-class-p ANY-OBJECT 'scxml-transition)"
   (and any (object-of-class-p any 'scxml-transition)))
@@ -429,7 +446,7 @@ belongs to an scxml document that is already known to be valid."
 
 Optionally, if the slot name is in skip-slots (as a symbol) then
 forcefully put it in t he element's attribute hash table, not in
-the slot (even if a proper slot is found.
+the slot (even if a proper slot is found).
 
 Does not build recursively."
   (unless (symbolp type)
