@@ -169,7 +169,8 @@ Allowing for certain attributes to take different forms, such as:
 - :events - may be a string with space separators, a list, or null
 - TODO: :target - the same as events"
   (if-let ((event-attribute-value (plist-get slots :events))
-           (events (split-string event-attribute-value " " t)))
+           (events (and (stringp event-attribute-value)
+                        (split-string event-attribute-value " " t))))
       (let ((slot-specifiers (copy-list slots))) ; be safe and copy the list?
         (plist-put slot-specifiers :events events)
         (apply (function cl-call-next-method)

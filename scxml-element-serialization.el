@@ -35,6 +35,9 @@
 Normally all child elements will be rendered to xml and output as
 well.  When EXCLUDE-CHILDREN is true then no child elements will
 be included in the output."
+  (cl-assert (not (null (element)))
+             t
+             "Unable to get an xml string for a null element")
   (let ((xml-name (scxml-xml-element-name element)))
     (if (null xml-name)
         ""

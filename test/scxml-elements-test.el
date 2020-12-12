@@ -14,7 +14,6 @@
                    "anything"))
     (should (eq (scxml-num-attrib element)
                 1))))
-
 (ert-deftest scxml--element-factory-test-state ()
   (let* ((attribs '((id . "test-id")
                     (anything . "else")))
@@ -27,7 +26,6 @@
                    "else"))
     (should (eq (scxml-num-attrib element)
                 1))))
-
 (ert-deftest scxml--element-factory-test-final ()
   )
 (ert-deftest scxml--element-factory-test-initial ()
@@ -76,5 +74,27 @@
        (scxml-validate-add-child my-parent
                                   (scxml-add-child (scxml-initial)
                                                    (scxml-transition :target "another-child")))))))
+
+(ert-deftest scmxl--transition-creation-tests ()
+  "When creating a transition, the event attribute may be specified in a number of ways"
+
+  (let ((transition (scxml-transition :target "X" :events "A")))
+    (should (equal "X" (scxml-get-target-id transition)))
+    (should (eq 1 (length (scxml-get-events transition))))
+    (should (equal "A" (first (scxml-get-events transition)))))
+
+  (let ((transition (scxml-transition :target "X" :events (list "A" "B"))))
+    (should (equal "X" (scxml-get-target-id transition)))
+    (should (eq 2 (length (scxml-get-events transition))))
+    (should (equal "A" (first (scxml-get-events transition))))
+    (should (equal "B" (second (scxml-get-events transition)))))
+
+  (let ((transition (scxml-transition :target "X" :events "A B C")))
+    (should (equal "X" (scxml-get-target-id transition)))
+    (should (eq 3 (length (scxml-get-events transition))))
+    (should (equal "A" (first (scxml-get-events transition))))
+    (should (equal "B" (second (scxml-get-events transition))))
+    (should (equal "C" (third (scxml-get-events transition)))))
+    )
 
 (provide 'scxml-elements-test)
